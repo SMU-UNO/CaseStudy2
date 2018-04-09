@@ -1,6 +1,6 @@
 library(ggplot2)
 
-AttritionData <- read.csv("C:\\Users\\bpkim\\OneDrive\\Desktop\\6306DoingDataScience\\CaseStudy2files\\CaseStudy2-data.csv")
+AttritionData <- read.csv("https://raw.githubusercontent.com/SMU-UNO/CaseStudy2/master/RawData/CaseStudy2-data.csv")
 
 AttritionData$Attrition2[AttritionData$Attrition == "Yes"] <- 1
 AttritionData$Attrition2[AttritionData$Attrition == "No"] <- 0
