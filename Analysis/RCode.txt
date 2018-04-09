@@ -1,0 +1,39 @@
+library(ggplot2)
+
+AttritionData <- read.csv("C:\\Users\\bpkim\\OneDrive\\Desktop\\6306DoingDataScience\\CaseStudy2files\\CaseStudy2-data.csv")
+
+AttritionData$Attrition2[AttritionData$Attrition == "Yes"] <- 1
+AttritionData$Attrition2[AttritionData$Attrition == "No"] <- 0
+
+AttritionDataUnder2Years <- subset(AttritionData, AttritionData$TotalWorkingYears<2)
+
+AttritionDataOver11years <- subset(AttritionData, AttritionData$TotalWorkingYears>11)
+
+AttritionData2to11years <- subset(AttritionData, AttritionData$TotalWorkingYears>2 & AttritionData$TotalWorkingYears<12)
+
+agg<- (aggregate(Attrition2 ~ TotalWorkingYears, data=AttritionData, FUN=mean))
+agg2<- (aggregate(Attrition2 ~ TotalWorkingYears, data=AttritionData, FUN=sum))
+ggplot(data=agg, aes(x=TotalWorkingYears, y=Attrition2))+ geom_bar(stat="identity", color="blue",fill="grey")+labs(title="Percentage Turnover Rate by Year Experience", x="Employee Total Working Years",y="Percentage of Employee Turnover")
+ggplot(data=agg2, aes(x=TotalWorkingYears, y=Attrition2))+ geom_bar(stat="identity", color="red",fill="grey")+labs(title="Total Turnover by Year Experience", x="Employee Total Working Years",y="Number of Employees Who Left the Firm")
+
+library(dygraphs)
+AT <- table(AttritionData[,1:2])
+AT2 <- as.data.frame.matrix(AT)
+Ages<-c(18:60)
+AT3<-data.frame(Ages,AT2)
+dygraph(AT3, xlab="Age", ylab="Number of Employees") %>%
+dySeries("Yes", label = "Left the Company") %>%
+dySeries("No", label = "Still Employed")
+
+AT3$Total <- AT3$No + AT3$Yes
+sum(AT3$Total[AT3$Ages>25&AT3$Ages<36])/sum(AT3$Total)
+sum(AT3$Total[AT3$Ages>23&AT3$Ages<52])/sum(AT3$Total)
+
+JobLevel <- AttritionData$JobLevel
+Attrition <- AttritionData$Attrition
+JobLevelAttrition <- data.frame(JobLevel,Attrition)
+table(JobLevelAttrition)
+
+Overtime <- AttritionData$Overtime
+OvertimeAttrition <- data.frame(Overtime, Attrition)
+barplot(table(OvertimeAttrition), col=c("lightblue","red"), beside=TRUE, xlab="Does the Employee Work Overtime?", ylab="Number of Employees", legend=c("Still at Company","Left the Company"))
