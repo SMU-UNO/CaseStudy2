@@ -1,9 +1,13 @@
 library(ggplot2)
+library(openxlsx)
 
 AttritionData <- read.csv("https://raw.githubusercontent.com/SMU-UNO/CaseStudy2/master/RawData/CaseStudy2-data.csv")
 
+AttritionData <- read.csv("C:\\Users\\bpkim\\OneDrive\\Desktop\\6306DoingDataScience\\CaseStudy2files\\CaseStudy2-data.csv")
+
 AttritionData$Attrition2[AttritionData$Attrition == "Yes"] <- 1
 AttritionData$Attrition2[AttritionData$Attrition == "No"] <- 0
+AttritionData$Age <- AttritionData$ï..Age
 
 AttritionDataUnder2Years <- subset(AttritionData, AttritionData$TotalWorkingYears<2)
 
@@ -37,3 +41,191 @@ table(JobLevelAttrition)
 Overtime <- AttritionData$Overtime
 OvertimeAttrition <- data.frame(Overtime, Attrition)
 barplot(table(OvertimeAttrition), col=c("lightblue","red"), beside=TRUE, xlab="Does the Employee Work Overtime?", ylab="Number of Employees", legend=c("Still at Company","Left the Company"))
+
+
+######Building a learning model based off all the data######
+AttritionCalcs <- AttritionData[,2:37]
+
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome>20000] <- "20001+"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=20000] <- "19501 to 20000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=19500] <- "19001 to 19500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=19000] <- "18501 to 19000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=18500] <- "18001 to 18500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=18000] <- "17501 to 18000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=17500] <- "17001 to 17500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=17000] <- "16501 to 17000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=16500] <- "16001 to 16500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=16000] <- "15501 to 16000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=15500] <- "15001 to 15500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=15000] <- "14501 to 15000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=14500] <- "14001 to 14500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=14000] <- "13501 to 14000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=13500] <- "13001 to 13500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=13000] <- "12501 to 13000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=12500] <- "12001 to 12500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=12000] <- "11501 to 12000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=11500] <- "11001 to 11500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=11000] <- "10501 to 11000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=10500] <- "10001 to 10500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=10000] <- "9501 to 10000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=9500] <- "9001 to 9500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=9000] <- "8501 to 9000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=8500] <- "8001 to 8500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=8000] <- "7501 to 8000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=7500] <- "7001 to 7500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=7000] <- "6501 to 7000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=6500] <- "6001 to 6500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=6000] <- "5501 to 6000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=5500] <- "5001 to 5500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=5000] <- "4501 to 5000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=4500] <- "4001 to 4500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=4000] <- "3501 to 4000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=3500] <- "3001 to 3500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=3000] <- "2501 to 3000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=2500] <- "2001 to 2500"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=2000] <- "1501 to 2000"
+AttritionCalcs$MonthlyIncomeRange[AttritionCalcs$MonthlyIncome<=1500] <- "0 to 1500"
+
+Age <- data.frame(aggregate(Attrition2 ~ Age, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ Age, data=AttritionData, FUN=sum))
+Age$AgeAttritionRate <- Age$Attrition2/Age$EmployeeCount
+Age <- Age[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, Age, by = "Age")
+
+BusinessTravel <- data.frame(aggregate(Attrition2 ~ BusinessTravel, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ BusinessTravel, data=AttritionData, FUN=sum))
+BusinessTravel$BusinessTravelAttritionRate <- BusinessTravel$Attrition2/BusinessTravel$EmployeeCount
+BusinessTravel <- BusinessTravel[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, BusinessTravel, by = "BusinessTravel")
+
+Department <- data.frame(aggregate(Attrition2 ~ Department, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ Department, data=AttritionData, FUN=sum))
+Department$DepartmentAttritionRate <- Department$Attrition2/Department$EmployeeCount
+Department <- Department[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, Department, by = "Department")
+ 
+DistanceFromHome <- data.frame(aggregate(Attrition2 ~ DistanceFromHome, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ DistanceFromHome, data=AttritionData, FUN=sum))
+DistanceFromHome$DistanceFromHomeAttritionRate <- DistanceFromHome$Attrition2/DistanceFromHome$EmployeeCount
+DistanceFromHome <- DistanceFromHome[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, DistanceFromHome, by = "DistanceFromHome")
+ 
+Education <- data.frame(aggregate(Attrition2 ~ Education, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ Education, data=AttritionData, FUN=sum))
+Education$EducationAttritionRate <- Education$Attrition2/Education$EmployeeCount
+Education <- Education[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, Education, by = "Education")
+ 
+EducationField <- data.frame(aggregate(Attrition2 ~ EducationField, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ EducationField, data=AttritionData, FUN=sum))
+EducationField$EducationFieldAttritionRate <- EducationField$Attrition2/EducationField$EmployeeCount
+EducationField <- EducationField[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, EducationField, by = "EducationField")
+ 
+EnvironmentSatisfaction <- data.frame(aggregate(Attrition2 ~ EnvironmentSatisfaction, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ EnvironmentSatisfaction, data=AttritionData, FUN=sum))
+EnvironmentSatisfaction$EnvironmentSatisfactionAttritionRate <- EnvironmentSatisfaction$Attrition2/EnvironmentSatisfaction$EmployeeCount
+EnvironmentSatisfaction <- EnvironmentSatisfaction[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, EnvironmentSatisfaction, by = "EnvironmentSatisfaction")
+ 
+Gender <- data.frame(aggregate(Attrition2 ~ Gender, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ Gender, data=AttritionData, FUN=sum))
+Gender$GenderAttritionRate <- Gender$Attrition2/Gender$EmployeeCount
+Gender <- Gender[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, Gender, by = "Gender")
+ 
+JobInvolvement <- data.frame(aggregate(Attrition2 ~ JobInvolvement, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ JobInvolvement, data=AttritionData, FUN=sum))
+JobInvolvement$JobInvolvementAttritionRate <- JobInvolvement$Attrition2/JobInvolvement$EmployeeCount
+JobInvolvement <- JobInvolvement[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, JobInvolvement, by = "JobInvolvement")
+ 
+JobLevel <- data.frame(aggregate(Attrition2 ~ JobLevel, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ JobLevel, data=AttritionData, FUN=sum))
+JobLevel$JobLevelAttritionRate <- JobLevel$Attrition2/JobLevel$EmployeeCount
+JobLevel <- JobLevel[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, JobLevel, by = "JobLevel")
+ 
+JobRole <- data.frame(aggregate(Attrition2 ~ JobRole, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ JobRole, data=AttritionData, FUN=sum))
+JobRole$JobRoleAttritionRate <- JobRole$Attrition2/JobRole$EmployeeCount
+JobRole <- JobRole[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, JobRole, by = "JobRole")
+ 
+JobSatisfaction <- data.frame(aggregate(Attrition2 ~ JobSatisfaction, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ JobSatisfaction, data=AttritionData, FUN=sum))
+JobSatisfaction$JobSatisfactionAttritionRate <- JobSatisfaction$Attrition2/JobSatisfaction$EmployeeCount
+JobSatisfaction <- JobSatisfaction[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, JobSatisfaction, by = "JobSatisfaction")
+ 
+MaritalStatus <- data.frame(aggregate(Attrition2 ~ MaritalStatus, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ MaritalStatus, data=AttritionData, FUN=sum))
+MaritalStatus$MaritalStatusAttritionRate <- MaritalStatus$Attrition2/MaritalStatus$EmployeeCount
+MaritalStatus <- MaritalStatus[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, MaritalStatus, by = "MaritalStatus")
+ 
+NumCompaniesWorked <- data.frame(aggregate(Attrition2 ~ NumCompaniesWorked, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ NumCompaniesWorked, data=AttritionData, FUN=sum))
+NumCompaniesWorked$NumCompaniesWorkedAttritionRate <- NumCompaniesWorked$Attrition2/NumCompaniesWorked$EmployeeCount
+NumCompaniesWorked <- NumCompaniesWorked[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, NumCompaniesWorked, by = "NumCompaniesWorked")
+ 
+OverTime <- data.frame(aggregate(Attrition2 ~ OverTime, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ OverTime, data=AttritionData, FUN=sum))
+OverTime$OverTimeAttritionRate <- OverTime$Attrition2/OverTime$EmployeeCount
+OverTime <- OverTime[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, OverTime, by = "OverTime")
+ 
+PercentSalaryHike <- data.frame(aggregate(Attrition2 ~ PercentSalaryHike, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ PercentSalaryHike, data=AttritionData, FUN=sum))
+PercentSalaryHike$PercentSalaryHikeAttritionRate <- PercentSalaryHike$Attrition2/PercentSalaryHike$EmployeeCount
+PercentSalaryHike <- PercentSalaryHike[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, PercentSalaryHike, by = "PercentSalaryHike")
+ 
+PerformanceRating <- data.frame(aggregate(Attrition2 ~ PerformanceRating, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ PerformanceRating, data=AttritionData, FUN=sum))
+PerformanceRating$PerformanceRatingAttritionRate <- PerformanceRating$Attrition2/PerformanceRating$EmployeeCount
+PerformanceRating <- PerformanceRating[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, PerformanceRating, by = "PerformanceRating")
+ 
+RelationshipSatisfaction <- data.frame(aggregate(Attrition2 ~ RelationshipSatisfaction, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ RelationshipSatisfaction, data=AttritionData, FUN=sum))
+RelationshipSatisfaction$RelationshipSatisfactionAttritionRate <- RelationshipSatisfaction$Attrition2/RelationshipSatisfaction$EmployeeCount
+RelationshipSatisfaction <- RelationshipSatisfaction[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, RelationshipSatisfaction, by = "RelationshipSatisfaction")
+ 
+StockOptionLevel <- data.frame(aggregate(Attrition2 ~ StockOptionLevel, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ StockOptionLevel, data=AttritionData, FUN=sum))
+StockOptionLevel$StockOptionLevelAttritionRate <- StockOptionLevel$Attrition2/StockOptionLevel$EmployeeCount
+StockOptionLevel <- StockOptionLevel[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, StockOptionLevel, by = "StockOptionLevel")
+ 
+TotalWorkingYears <- data.frame(aggregate(Attrition2 ~ TotalWorkingYears, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ TotalWorkingYears, data=AttritionData, FUN=sum))
+TotalWorkingYears$TotalWorkingYearsAttritionRate <- TotalWorkingYears$Attrition2/TotalWorkingYears$EmployeeCount
+TotalWorkingYears <- TotalWorkingYears[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, TotalWorkingYears, by = "TotalWorkingYears")
+ 
+TrainingTimesLastYear <- data.frame(aggregate(Attrition2 ~ TrainingTimesLastYear, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ TrainingTimesLastYear, data=AttritionData, FUN=sum))
+TrainingTimesLastYear$TrainingTimesLastYearAttritionRate <- TrainingTimesLastYear$Attrition2/TrainingTimesLastYear$EmployeeCount
+TrainingTimesLastYear <- TrainingTimesLastYear[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, TrainingTimesLastYear, by = "TrainingTimesLastYear")
+ 
+WorkLifeBalance <- data.frame(aggregate(Attrition2 ~ WorkLifeBalance, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ WorkLifeBalance, data=AttritionData, FUN=sum))
+WorkLifeBalance$WorkLifeBalanceAttritionRate <- WorkLifeBalance$Attrition2/WorkLifeBalance$EmployeeCount
+WorkLifeBalance <- WorkLifeBalance[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, WorkLifeBalance, by = "WorkLifeBalance")
+ 
+YearsAtCompany <- data.frame(aggregate(Attrition2 ~ YearsAtCompany, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ YearsAtCompany, data=AttritionData, FUN=sum))
+YearsAtCompany$YearsAtCompanyAttritionRate <- YearsAtCompany$Attrition2/YearsAtCompany$EmployeeCount
+YearsAtCompany <- YearsAtCompany[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, YearsAtCompany, by = "YearsAtCompany")
+ 
+YearsInCurrentRole <- data.frame(aggregate(Attrition2 ~ YearsInCurrentRole, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ YearsInCurrentRole, data=AttritionData, FUN=sum))
+YearsInCurrentRole$YearsInCurrentRoleAttritionRate <- YearsInCurrentRole$Attrition2/YearsInCurrentRole$EmployeeCount
+YearsInCurrentRole <- YearsInCurrentRole[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, YearsInCurrentRole, by = "YearsInCurrentRole")
+ 
+YearsSinceLastPromotion <- data.frame(aggregate(Attrition2 ~ YearsSinceLastPromotion, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ YearsSinceLastPromotion, data=AttritionData, FUN=sum))
+YearsSinceLastPromotion$YearsSinceLastPromotionAttritionRate <- YearsSinceLastPromotion$Attrition2/YearsSinceLastPromotion$EmployeeCount
+YearsSinceLastPromotion <- YearsSinceLastPromotion[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, YearsSinceLastPromotion, by = "YearsSinceLastPromotion")
+ 
+YearsWithCurrManager <- data.frame(aggregate(Attrition2 ~ YearsWithCurrManager, data=AttritionData, FUN=sum),  aggregate(EmployeeCount ~ YearsWithCurrManager, data=AttritionData, FUN=sum))
+YearsWithCurrManager$YearsWithCurrManagerAttritionRate <- YearsWithCurrManager$Attrition2/YearsWithCurrManager$EmployeeCount
+YearsWithCurrManager <- YearsWithCurrManager[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, YearsWithCurrManager, by = "YearsWithCurrManager")
+
+MonthlyIncomeRange <- data.frame(aggregate(Attrition2 ~ MonthlyIncomeRange, data=AttritionCalcs, FUN=sum),  aggregate(EmployeeCount ~ MonthlyIncomeRange, data=AttritionCalcs, FUN=sum))
+MonthlyIncomeRange$MonthlyIncomeRangeAttritionRate <- MonthlyIncomeRange$Attrition2/MonthlyIncomeRange$EmployeeCount
+MonthlyIncomeRange <- MonthlyIncomeRange[-2:-4]
+AttritionCalcs = merge(AttritionCalcs, MonthlyIncomeRange, by = "MonthlyIncomeRange")
+
+AttritionCalcs$TotalAttritionScore <- round(rowSums(AttritionCalcs[,38:64]),1)
+
+write.csv(AttritionCalcs, 'AttritionCalcsTotalScores.csv')
+
+
+
+
+
