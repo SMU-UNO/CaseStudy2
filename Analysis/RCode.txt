@@ -38,11 +38,6 @@ Attrition <- AttritionData$Attrition
 JobLevelAttrition <- data.frame(JobLevel,Attrition)
 table(JobLevelAttrition)
 
-Overtime <- AttritionData$Overtime
-OvertimeAttrition <- data.frame(Overtime, Attrition)
-barplot(table(OvertimeAttrition), col=c("lightblue","red"), beside=TRUE, xlab="Does the Employee Work Overtime?", ylab="Number of Employees", legend=c("Still at Company","Left the Company"))
-
-
 ######Building a learning model based off all the data######
 AttritionCalcs <- AttritionData[,2:37]
 
