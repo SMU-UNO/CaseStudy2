@@ -20,6 +20,8 @@ head(employee)
 library(caret)
 library(ggplot2)
 library(ggthemes)
+library(dplyr)
+library(dygraphs)
 nearZeroVar(employee) 
 employee$Over18 <- NULL
 employee$EmployeeCount <- NULL
@@ -90,22 +92,33 @@ ggplot(employee, aes(x=factor(Department), y=MonthlyIncome, color=factor(Attriti
 
 # sales department has the highest attrition factor.
 ```
+# Plots of each of the survey respones and their totals. Surprisingly no difference in atrition rates.
+```{r}
+ggplot(employee, aes(EnvironmentSatisfaction, fill = Attrition)) + geom_bar() + scale_fill_solarized() +  theme_solarized() + labs(title="Attrition Based on Environment Satisfaction Responses", x="Environment Satisfaction Rating", y="Count of Employees")
+
+ggplot(employee, aes(JobSatisfaction, fill = Attrition)) + geom_bar(aes()) + scale_fill_solarized() +  theme_solarized() + labs(title="Attrition Based on Job Satisfaction Responses", x="Job Satisfaction Rating", y="Count of Employees")
+
+ggplot(employee, aes(RelationshipSatisfaction, fill = Attrition)) + geom_bar(aes()) + scale_fill_solarized() +  theme_solarized() + labs(title="Attrition Based on Relationship Satisfaction Responses", x="Relationship Satisfaction Rating", y="Count of Employees")
+```
+
 ```{r}
 
 AttritionData <- read.csv("https://raw.githubusercontent.com/SMU-UNO/CaseStudy2/master/RawData/CaseStudy2-data.csv")
 
 AttritionData <- read.csv("C:\\Users\\bpkim\\OneDrive\\Desktop\\6306DoingDataScience\\CaseStudy2files\\CaseStudy2-data.csv")
 
+#Changing Attirtion to a 1 and 0 to be able to divide and converting the odd Age column into  readable field
 AttritionData$Attrition2[AttritionData$Attrition == "Yes"] <- 1
 AttritionData$Attrition2[AttritionData$Attrition == "No"] <- 0
 AttritionData$Age <- AttritionData$ï..Age
 
+#Years experience work
 agg<- (aggregate(Attrition2 ~ TotalWorkingYears, data=AttritionData, FUN=mean))
 agg2<- (aggregate(Attrition2 ~ TotalWorkingYears, data=AttritionData, FUN=sum))
 ggplot(data=agg, aes(x=TotalWorkingYears, y=Attrition2))+ geom_bar(stat="identity", color="blue",fill="grey")+labs(title="Percentage Turnover Rate by Year Experience", x="Employee Total Working Years",y="Percentage of Employee Turnover")
 ggplot(data=agg2, aes(x=TotalWorkingYears, y=Attrition2))+ geom_bar(stat="identity", color="red",fill="grey")+labs(title="Total Turnover by Year Experience", x="Employee Total Working Years",y="Number of Employees Who Left the Firm")
 
-library(dygraphs)
+#Converting AGe into a time series to procude a dygraph
 AT <- table(AttritionData[,1:2])
 AT2 <- as.data.frame.matrix(AT)
 Ages<-c(18:60)
@@ -117,10 +130,12 @@ dyShading(from = "26", to = "35", color = "#FFE6E6") %>%
 dyShading(from = "24", to = "26", color = "#DCDCDC") %>%
 dyShading(from = "35", to = "51", color = "#DCDCDC")
 
+#values of total employees by age
 AT3$Total <- AT3$No + AT3$Yes
 sum(AT3$Total[AT3$Ages>25&AT3$Ages<36])/sum(AT3$Total)
 sum(AT3$Total[AT3$Ages>23&AT3$Ages<52])/sum(AT3$Total)
 
+#job level information to output into chart
 JobLevel <- AttritionData$JobLevel
 Attrition <- AttritionData$Attrition
 JobLevelAttrition <- data.frame(JobLevel,Attrition)
@@ -305,6 +320,9 @@ MonthlyIncomeRange <- MonthlyIncomeRange[-2:-4]
 AttritionCalcs = merge(AttritionCalcs, MonthlyIncomeRange, by = "MonthlyIncomeRange")
 
 AttritionCalcs$TotalAttritionScore <- round(rowSums(AttritionCalcs[,38:64]),1)
+
+boxplot(AttritionCalcs$TotalAttritionScore)
+summary(AttritionCalcs$TotalAttritionScore)
 ```
 Leaving out of r so not to repeat over and over
 write.csv(AttritionCalcs, 'AttritionCalcsTotalScores.csv')
