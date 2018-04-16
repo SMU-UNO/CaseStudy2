@@ -91,7 +91,6 @@ ggplot(employee, aes(x=factor(Department), y=MonthlyIncome, color=factor(Attriti
 ```
 
 # sales department has the highest attrition factor.
-```
 # Plots of each of the survey respones and their totals. Surprisingly no difference in atrition rates.
 ```{r}
 ggplot(employee, aes(EnvironmentSatisfaction, fill = Attrition)) + geom_bar() + scale_fill_solarized() +  theme_solarized() + labs(title="Attrition Based on Environment Satisfaction Responses", x="Environment Satisfaction Rating", y="Count of Employees")
@@ -99,6 +98,14 @@ ggplot(employee, aes(EnvironmentSatisfaction, fill = Attrition)) + geom_bar() + 
 ggplot(employee, aes(JobSatisfaction, fill = Attrition)) + geom_bar(aes()) + scale_fill_solarized() +  theme_solarized() + labs(title="Attrition Based on Job Satisfaction Responses", x="Job Satisfaction Rating", y="Count of Employees")
 
 ggplot(employee, aes(RelationshipSatisfaction, fill = Attrition)) + geom_bar(aes()) + scale_fill_solarized() +  theme_solarized() + labs(title="Attrition Based on Relationship Satisfaction Responses", x="Relationship Satisfaction Rating", y="Count of Employees")
+```
+
+
+#Hourly Rate and Business Travel
+```{r}
+HrlyRate<- cut(employee$HourlyRate, 7, include.lowest = TRUE)
+ ggplot(employee, aes(HrlyRate, ..count.., fill = factor(Attrition))) + geom_bar(position="stack", width = 0.5) + scale_fill_manual(values=c("green","Royalblue"))
+ ggplot(employee, aes(BusinessTravel, ..count.., fill = factor(Attrition))) + geom_bar(position="stack", width = 0.5) + scale_fill_manual(values=c("green","Royalblue"))
 ```
 
 ```{r}
@@ -110,7 +117,7 @@ AttritionData <- read.csv("C:\\Users\\bpkim\\OneDrive\\Desktop\\6306DoingDataSci
 #Changing Attirtion to a 1 and 0 to be able to divide and converting the odd Age column into  readable field
 AttritionData$Attrition2[AttritionData$Attrition == "Yes"] <- 1
 AttritionData$Attrition2[AttritionData$Attrition == "No"] <- 0
-AttritionData$Age <- AttritionData$ï..Age
+AttritionData$Age <- AttritionData$?..Age
 
 #Years experience work
 agg<- (aggregate(Attrition2 ~ TotalWorkingYears, data=AttritionData, FUN=mean))
