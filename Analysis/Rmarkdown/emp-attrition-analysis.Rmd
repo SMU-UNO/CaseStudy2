@@ -123,12 +123,10 @@ HrlyRate<- cut(employee$HourlyRate, 7, include.lowest = TRUE)
 
 AttritionData <- read.csv("https://raw.githubusercontent.com/SMU-UNO/CaseStudy2/master/RawData/CaseStudy2-data.csv")
 
-AttritionData <- read.csv("C:\\Users\\bpkim\\OneDrive\\Desktop\\6306DoingDataScience\\CaseStudy2files\\CaseStudy2-data.csv")
-
 #Changing Attirtion to a 1 and 0 to be able to divide and converting the odd Age column into  readable field
 AttritionData$Attrition2[AttritionData$Attrition == "Yes"] <- 1
 AttritionData$Attrition2[AttritionData$Attrition == "No"] <- 0
-AttritionData$Age <- AttritionData$Ã¯..Age
+AttritionData$Age <- AttritionData$ï..Age
 
 
 #Years experience work
