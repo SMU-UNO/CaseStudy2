@@ -3,7 +3,11 @@ title: "R Case Study2"
 output: html_document
 ---
 
-##Your team has been given a dataset (CaseStudy2Data.zip) to conduct exploratory data analysis (EDA) to determine factors that lead to attrition. You should identify (at least) the top three factors that contribute to turnover. There may or may not be a need to create derived attributes/variables. The business is also interested in learning about any job role specific trends that may exist in the data set (e.g., “Data Scientists have the highest job satisfaction”). You can also provide any other interesting trends and observations from your analysis. The analysis should be backed up by robust experimentation and (where applicable) appropriate visualization. Experiments and analysis must be conducted in R. If needed, consult with the business owner to get clarifications on the dataset or business goals.
+
+#R Case Study2-employee Attrition link for the git https://github.com/SMU-UNO/CaseStudy2
+
+##Your team has been given a dataset (CaseStudy2Data.zip) to conduct exploratory data analysis (EDA) to determine factors that lead to attrition. You should identify (at least) the top three factors that contribute to turnover. There may or may not be a need to create derived attributes/variables. The business is also interested in learning about any job role specific trends that may exist in the data set (e.g., â€œData Scientists have the highest job satisfactionâ€). You can also provide any other interesting trends and observations from your analysis. The analysis should be backed up by robust experimentation and (where applicable) appropriate visualization. Experiments and analysis must be conducted in R. If needed, consult with the business owner to get clarifications on the dataset or business goals.
+
 
 ```{r}
 employee <- read.csv("https://raw.githubusercontent.com/SMU-UNO/CaseStudy2/master/RawData/CaseStudy2-data.csv", header=TRUE, sep=",")
@@ -99,6 +103,13 @@ ggplot(employee, aes(JobSatisfaction, fill = Attrition)) + geom_bar(aes()) + sca
 
 ggplot(employee, aes(RelationshipSatisfaction, fill = Attrition)) + geom_bar(aes()) + scale_fill_solarized() +  theme_solarized() + labs(title="Attrition Based on Relationship Satisfaction Responses", x="Relationship Satisfaction Rating", y="Count of Employees")
 ```
+#Hourly Rate and Business Travel
+```{r}
+HrlyRate<- cut(employee$HourlyRate, 7, include.lowest = TRUE)
+ ggplot(employee, aes(HrlyRate, ..count.., fill = factor(Attrition))) + geom_bar(position="stack", width = 0.5) + scale_fill_manual(values=c("green","Royalblue"))
+ ggplot(employee, aes(BusinessTravel, ..count.., fill = factor(Attrition))) + geom_bar(position="stack", width = 0.5) + scale_fill_manual(values=c("green","Royalblue"))
+```
+
 
 
 #Hourly Rate and Business Travel
@@ -117,7 +128,8 @@ AttritionData <- read.csv("C:\\Users\\bpkim\\OneDrive\\Desktop\\6306DoingDataSci
 #Changing Attirtion to a 1 and 0 to be able to divide and converting the odd Age column into  readable field
 AttritionData$Attrition2[AttritionData$Attrition == "Yes"] <- 1
 AttritionData$Attrition2[AttritionData$Attrition == "No"] <- 0
-AttritionData$Age <- AttritionData$?..Age
+AttritionData$Age <- AttritionData$ï..Age
+
 
 #Years experience work
 agg<- (aggregate(Attrition2 ~ TotalWorkingYears, data=AttritionData, FUN=mean))
